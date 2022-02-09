@@ -1,0 +1,37 @@
+version: '3.8'
+networks: 
+  vpc:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.161.1.0/24
+    name: ssh-training.backend
+volumes:
+  app-data:
+services:
+  ssh:
+    image: ssh-training
+    container_name: ssh-training.ssh
+    build:
+      context: ./
+    environment:
+      TZ: "Asia/Tokyo"
+    ports:
+      - 8080:80
+      - 2222:22
+    volumes:
+      - ./share_file/supervisord.d:/etc/supervisord.d
+    networks:
+      vpc:
+        ipv4_address: 192.161.1.2
+  # 踏み台を試してみたい方は、以下の様にサーバーをもう1つ建てて、同じVPC内でSSH接続が出来るようにする。
+  # web:
+  #   image: ssh-training
+  #   container_name: ssh-training.web
+  #   ports:
+  #     - 8080:80
+  #   volumes:
+  #     - ./share_file/supervisord.d/:/etc/supervisord.d/
+  #   networks:
+  #     vpc:
+  #       ipv4_address: 192.161.1.3
