@@ -24,7 +24,12 @@ RUN chmod -R 600 /etc/ssh
 RUN useradd -ms /bin/bash ec2-user
 RUN useradd sudo
 RUN echo 'ec2-user ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
+
 WORKDIR /root
+
+RUN sudo -u ec2-user ssh-keygen -t rsa -N '' -f /home/ec2-user/.ssh/id_rsa
+COPY ./conf/ssh/authorized_keys /home/ec2-user/.ssh/
+RUN chmod 600 /home/ec2-user/.ssh/authorized_keys && chown ec2-user:ec2-user /home/ec2-user/.ssh/authorized_keys
 
 # Add your port here later. Or create a new docker file to add the port.
 # I'll add port 80 for your experiment.
